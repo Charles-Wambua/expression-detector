@@ -313,3 +313,4 @@ if __name__ == '__main__':
                    # 1.open terminal on your vs code or whatever editor you are using
                    #2.navigate to src folder by, cd src
                    #3 run python emoji.py, to run
+# i have trainned the model for 7 epochs, for better performance ou can change the number to a higher number, like 50, on train.py, once you make the change run python train.py                   
