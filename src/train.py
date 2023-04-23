@@ -1,57 +1,64 @@
 from tensorflow.keras.models import Sequential
-import cv2
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 from keras.optimizers import Adam
-from keras.layers import MaxPooling2D
 from keras.preprocessing.image import ImageDataGenerator
-import numpy as np
 
-train_dir = 'data/train'
-val_dir = 'data/test'
+# Define the directories for training and validation data
+training_directory = 'data/train'
+validation_directory = 'data/test'
+
+# Define the image data generators for training and validation data
 train_datagen = ImageDataGenerator(rescale=1./255)
 val_datagen = ImageDataGenerator(rescale=1./255)
+
+# Create the data generators for training and validation data
 train_generator = train_datagen.flow_from_directory(
-    train_dir,
+    training_directory,
     target_size=(48, 48),
     batch_size=64,
     color_mode="grayscale",
     class_mode='categorical')
 
 validation_generator = val_datagen.flow_from_directory(
-    val_dir,
+    validation_directory,
     target_size=(48, 48),
     batch_size=64,
     color_mode="grayscale",
-    class_mode='categorical',
-)
+    class_mode='categorical')
 
-emotion_model=Sequential()
-emotion_model.add(Conv2D(32, kernel_size=(3,3),activation='relu', input_shape=(48,48,1)))
-emotion_model.add(Conv2D(32, kernel_size=(3,3),activation='relu'))
-emotion_model.add(MaxPooling2D(pool_size=(2,2)))
-emotion_model.add(Dropout(0.25))
-emotion_model.add(Conv2D(128, kernel_size=(3,3),activation='relu'))
-emotion_model.add(MaxPooling2D(pool_size=(2,2)))
-emotion_model.add(Conv2D(128, kernel_size=(3,3),activation='relu'))
-emotion_model.add(MaxPooling2D(pool_size=(2,2)))
-emotion_model.add(Dropout(0.25))
-emotion_model.add(Flatten())
-emotion_model.add(Dense(1024,activation='relu'))
-emotion_model.add(Dropout(0.5))
-emotion_model.add(Dense(7,activation='softmax'))
+# CNN architecture
+my_model = Sequential()
 
+my_model.add(Conv2D(64, kernel_size=(3,3), activation='relu', input_shape=(48,48,1)))
+my_model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
+my_model.add(MaxPooling2D(pool_size=(2,2)))
+my_model.add(Dropout(0.25))
 
-emotion_model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.000, decay=1e-6),metrics=['accuracy'])
+my_model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
+my_model.add(MaxPooling2D(pool_size=(2,2)))
+my_model.add(Conv2D(128, kernel_size=(3,3), activation='relu'))
+my_model.add(MaxPooling2D(pool_size=(2,2)))
+my_model.add(Dropout(0.25))
 
-emotion_model_info=emotion_model.fit_generator(
+my_model.add(Flatten())
+my_model.add(Dense(1024, activation='relu'))
+my_model.add(Dropout(0.5))
+my_model.add(Dense(7, activation='softmax'))
+
+# Compile the model
+my_model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
+
+# Train the model
+history = my_model.fit_generator(
     train_generator,
-    steps_per_epoch=28709//64,
-    epochs=7,
+    steps_per_epoch=len(train_generator),
+    epochs=10,
     validation_data=validation_generator,
-    validation_steps=7178//64,
-)
-emotion_model.save_weights('model.h5')
+    validation_steps=len(validation_generator))
+
+# Save the trained weights to a file
+my_model.save_weights('model.h5')
+
 
 
 
