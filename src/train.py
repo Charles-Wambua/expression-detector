@@ -78,7 +78,7 @@ my_model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.0005), met
 history = my_model.fit_generator(
     train_generator,
     steps_per_epoch=len(train_generator),
-    epochs=50,
+    epochs=10,
     validation_data=validation_generator,
     validation_steps=len(validation_generator))
 
