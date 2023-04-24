@@ -43,8 +43,8 @@ emoji_dist = {0: cur_path+"/data/emojis/angry.webp", 1: cur_path+"/data/emojis/d
               4: cur_path+"/data/emojis/neutral.jpg", 5: cur_path+"/data/emojis/sad.jpeg",
               6: cur_path+"/data/emojis/surprised.jpg"}
 
-global last_frame1
-last_frame1 = np.zeros((480, 640, 3), dtype=np.uint8)
+global last_frame
+last_frame = np.zeros((480, 640, 3), dtype=np.uint8)
 global cfile
 show_text = [4]
 global frame_number
@@ -63,7 +63,7 @@ def choose_file():
 
 def main_window():
     cfile = cv2.VideoCapture(
-        r'D:\GUI-python\src\data\about2.jpg')
+        r'D:\expression-detector\src\data\about2.jpg')
     global selected_file_path
     if not cfile.isOpened():
         print("Can't open the camera")
@@ -72,37 +72,11 @@ def main_window():
 
     # Determine the file type (image or video)
     _, file_extension = os.path.splitext(selected_file_path)
-    if file_extension.lower() in ('.jpg', '.jpeg', '.png', '.gif', '.PNG', '.webp'):
+    if file_extension.lower() in ('.mp4', '.avi', '.mov', '.mkv','.jpg', '.jpeg', '.png', '.gif', '.PNG', '.webp'):
 
-        frame = cv2.imread(selected_file_path)
-
-        # Detect faces and emotions in the current frame
-        bounding_box = cv2.CascadeClassifier(
-            r'D:\GUI-python\src\data\Newfolder\haarcascade_frontalface_default.xml')
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        num_faces = bounding_box.detectMultiScale(
-            gray_frame, scaleFactor=1.3, minNeighbors=5)
-
-        for (x, y, w, h) in num_faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
-            roi_gray_frame = gray_frame[y:y + h, x:x + w]
-            cropped_image = np.expand_dims(np.expand_dims(
-                cv2.resize(roi_gray_frame, (48, 48)), -1), 0)
-            prediction = my_model.predict(cropped_image)
-            emotion_label = emotion_dict[maxindex]
-            maxindex = int(np.argmax(prediction))
-            confidence_level = prediction[0][maxindex]
-            cv2.putText(frame, f"{emotion_label} ({int(round(confidence_level*100))})", (x+20, y-60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-
-            show_text[0] = maxindex
-
-        cv2.imshow('Image', frame)
-        cv2.waitKey(0)
-    elif file_extension.lower() in ('.mp4', '.avi', '.mov', '.mkv'):
         cfile = cv2.VideoCapture(selected_file_path)
         if not cfile.isOpened():
-            print("Can't open the camera")
+            print("Can't open the video")
     global frame_number
     length = int(cfile.get(cv2.CAP_PROP_FRAME_COUNT))
     frame_number += 1
@@ -113,7 +87,7 @@ def main_window():
     flag1, frame = cfile.retrieve()
     frame = cv2.resize(frame, (300, 400))
     bounding_box = cv2.CascadeClassifier(
-        r'D:\GUI-python\src\data\New folder\haarcascade_frontalface_default.xml')
+        r'D:\expression-detector\src\data\New folder\haarcascade_frontalface_default.xml')
 
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     num_faces = bounding_box.detectMultiScale(
@@ -141,10 +115,10 @@ def main_window():
     if flag1 is None:
         print('Major Error!')
     elif flag1:
-        global last_frame1
-        last_frame1 = frame.copy()
+        global last_frame
+        last_frame = frame.copy()
 
-        pic = cv2.cvtColor(last_frame1, cv2.COLOR_BGR2RGB)
+        pic = cv2.cvtColor(last_frame, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(pic)
         imgtk = ImageTk.PhotoImage(image=img)
         icon.imgtk = imgtk
@@ -156,9 +130,9 @@ def main_window():
 
 
 def show_emoji():
-    frame2 = cv2.imread(emoji_dist[show_text[0]])
-    pic2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
-    img2 = Image.fromarray(frame2)
+    frame1 = cv2.imread(emoji_dist[show_text[0]])
+    pic2 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+    img2 = Image.fromarray(frame1)
     img2 = img2.resize((int(img2.width * 0.2), int(img2.height * 0.2)))
     imgtk2 = ImageTk.PhotoImage(image=img2)
     icon2.imgtk = imgtk2
