@@ -281,7 +281,7 @@ if __name__ == '__main__':
 
 # hello thank you for trusting me and working with me, you are always welcome to work with me anytime
 # make the reamining $50 via my paypal, wambuacharles33@gmail.com
-#
+#whatsApp number +254114652533
 # to run this project run:
     # 1.open terminal on your vs code or whatever editor you are using
     # 2.navigate to src folder by, cd src
