@@ -1,4 +1,4 @@
-from tensorflow.keras.models import Sequential
+from tensorflow import keras
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, BatchNormalization
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
@@ -36,7 +36,7 @@ validation_generator = val_datagen.flow_from_directory(
     class_mode='categorical')
 
 # CNN architecture
-my_model = Sequential()
+my_model = keras.models.Sequential()
 
 my_model.add(Conv2D(32, kernel_size=(3,3), activation='relu', padding='same', input_shape=(48,48,1)))
 my_model.add(BatchNormalization())
@@ -83,7 +83,7 @@ history = my_model.fit_generator(
     validation_steps=len(validation_generator))
 
 
-my_model.save_weights('model.h6')
+my_model.save_weights('model.h5')
 
 
 

@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import os
-from tensorflow.keras.models import Sequential
+from tensorflow import keras
 import cv2
 import numpy as np
 import threading
@@ -12,7 +12,7 @@ from tkinter import filedialog, messagebox
 from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 
 
-my_model = Sequential()
+my_model = keras.models.Sequential()
 
 my_model.add(Conv2D(64, kernel_size=(3, 3),
              activation='relu', input_shape=(48, 48, 1)))
@@ -30,7 +30,10 @@ my_model.add(Flatten())
 my_model.add(Dense(1024, activation='relu'))
 my_model.add(Dropout(0.5))
 my_model.add(Dense(7, activation='softmax'))
-my_model.save_weights('model.h5')
+
+my_model.load_weights('model.h5')
+
+
 cv2.ocl.setUseOpenCL(False)
 
 emotion_dict = {0: "angry", 1: "disgust", 2: "fear",
