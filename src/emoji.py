@@ -31,7 +31,7 @@ my_model.add(Dense(1024, activation='relu'))
 my_model.add(Dropout(0.5))
 my_model.add(Dense(7, activation='softmax'))
 
-my_model.load_weights('model.h5')
+my_model.load_weights('model_2.h5')
 
 
 cv2.ocl.setUseOpenCL(False)
