@@ -84,7 +84,7 @@ def main_window():
         r'D:\expression-detector\src\data\about2.jpg')
     global selected_file_path
     if not cfile.isOpened():
-        print("Can't open the camera")
+        print("Can't open the file")
         messagebox.showinfo("Error", "Please choose a file")
         return
 
