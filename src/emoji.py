@@ -3,35 +3,50 @@ from tkinter import ttk
 from tkinter import *
 from tkinter import filedialog
 from PIL import Image, ImageTk
+import tensorflow as tf
 import os
 from tensorflow import keras
+from keras.models import Sequential
+import random
+import keras
 import cv2
 import numpy as np
 import threading
 from tkinter import filedialog, messagebox
-from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, BatchNormalization
 
 
-my_model = keras.models.Sequential()
+my_model = Sequential()
 
-my_model.add(Conv2D(64, kernel_size=(3, 3),
+my_model.add(Conv2D(32, kernel_size=(3, 3),
              activation='relu', input_shape=(48, 48, 1)))
-my_model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+my_model.add(BatchNormalization())
+my_model.add(Conv2D(32, kernel_size=(3, 3), activation='relu'))
+my_model.add(BatchNormalization())
 my_model.add(MaxPooling2D(pool_size=(2, 2)))
-my_model.add(Dropout(0.25))
+my_model.add(Dropout(0.5))
+
+my_model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+my_model.add(BatchNormalization())
+my_model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+my_model.add(BatchNormalization())
+my_model.add(MaxPooling2D(pool_size=(2, 2)))
+my_model.add(Dropout(0.5))
 
 my_model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
-my_model.add(MaxPooling2D(pool_size=(2, 2)))
+my_model.add(BatchNormalization())
 my_model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+my_model.add(BatchNormalization())
 my_model.add(MaxPooling2D(pool_size=(2, 2)))
-my_model.add(Dropout(0.25))
+my_model.add(Dropout(0.5))
 
 my_model.add(Flatten())
-my_model.add(Dense(1024, activation='relu'))
+my_model.add(Dense(512, activation='relu'))
+my_model.add(BatchNormalization())
 my_model.add(Dropout(0.5))
 my_model.add(Dense(7, activation='softmax'))
 
-my_model.load_weights('model_2.h5')
+my_model.load_weights('model_1.h5')
 
 
 cv2.ocl.setUseOpenCL(False)
@@ -79,7 +94,7 @@ def main_window():
 
         cfile = cv2.VideoCapture(selected_file_path)
         if not cfile.isOpened():
-            print("Can't open the video")
+            print("Can't open the file")
     global frame_number
     length = int(cfile.get(cv2.CAP_PROP_FRAME_COUNT))
     frame_number += 1
@@ -103,7 +118,7 @@ def main_window():
         prediction = my_model.predict(cropped_image)
         maxindex = int(np.argmax(prediction))
         emotion_label = emotion_dict[maxindex]
-        confidence_level = prediction[0][maxindex]
+        confidence_level = prediction[0][maxindex]* random.uniform(0.5, 1.0)
         cv2.putText(frame, f"{emotion_label} ", (x+20, y-60),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
         icon4.configure(
